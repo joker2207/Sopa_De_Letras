@@ -1,0 +1,123 @@
+.word-search-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  @media (min-width: 768px) {
+    .word-search-container {
+      flex-direction: row;
+      gap: 1rem;
+    }
+  }
+  
+  .word-search-board {
+    flex: 1;
+    padding: 1rem;
+    background-color: #f3f4f6;
+    border-radius: 0.5rem;
+  }
+  
+  .word-search-controls {
+    flex: 1;
+    padding: 1rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+  }
+  
+  .word-search-table {
+    border-collapse: collapse;
+  }
+  
+  .word-search-cell {
+    width: 2rem;
+    height: 2rem;
+    text-align: center;
+    border: 1px solid #d1d5db;
+  }
+  
+  .word-horizontal {
+    color: #dc2626;
+    font-weight: bold;
+  }
+  
+  .word-vertical {
+    color: #2563eb;
+    font-weight: bold;
+  }
+  
+  .word-diagonal {
+    color: #16a34a;
+    font-weight: bold;
+  }
+  
+  .word-bottomup {
+    color: #9333ea;
+    font-weight: bold;
+  }
+  
+  .word-topdown {
+    color: #d97706;
+    font-weight: bold;
+  }
+  
+  .word-list {
+    margin-bottom: 1rem;
+  }
+  
+  .word-list-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .word-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .remove-button {
+    color: #ef4444;
+    margin-left: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    border: none;
+    color: white;
+  }
+  
+  .button-primary {
+    background-color: #3b82f6;
+  }
+  
+  .button-success {
+    background-color: #22c55e;
+  }
+  
+  .button-purple {
+    background-color: #a855f7;
+  }
+  
+  .input-field {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+  }
+  
+  .input-group {
+    display: flex;
+  }
+  
+  .input-group .input-field {
+    flex: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  
+  .input-group .button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
