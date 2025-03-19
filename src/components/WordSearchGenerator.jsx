@@ -1,12 +1,33 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import './WordSearchGenerator.css';
 
-// Colores para diferentes tipos de palabras - definido fuera del componente
-const wordColors = {
-  horizontal: 'text-red-600',
-  vertical: 'text-blue-600',
-  diagonal: 'text-green-600',
-  bottomUp: 'text-purple-600',
-  topDown: 'text-amber-600'
+// Definimos estilos para cada tipo de palabra
+const wordStyles = {
+  horizontal: {
+    cellClass: 'horizontal-highlighted',
+    wordClass: 'horizontal-word',
+    titleClass: 'horizontal-title'
+  },
+  vertical: {
+    cellClass: 'vertical-highlighted',
+    wordClass: 'vertical-word',
+    titleClass: 'vertical-title'
+  },
+  diagonal: {
+    cellClass: 'diagonal-highlighted',
+    wordClass: 'diagonal-word',
+    titleClass: 'diagonal-title'
+  },
+  bottomUp: {
+    cellClass: 'bottomup-highlighted',
+    wordClass: 'bottomup-word',
+    titleClass: 'bottomup-title'
+  },
+  topDown: {
+    cellClass: 'topdown-highlighted',
+    wordClass: 'topdown-word',
+    titleClass: 'topdown-title'
+  }
 };
 
 const WordSearchGenerator = () => {
@@ -138,12 +159,8 @@ const WordSearchGenerator = () => {
     bottomUpWords,
     topDownWords
   ]);
-
-  // Nota: Ya no necesitamos las funciones de colocación de palabras anteriores
-  // Ya que ahora usamos las nuevas funciones placeWord* que trabajan directamente 
-  // sobre un tablero temporal sin usar setState
-
-  // Función para generar el puzzle usando los callbacks memorizados
+  
+  // Función para generar el puzzle
   const generatePuzzle = useCallback(() => {
     // Primero limpiamos el tablero y creamos uno vacío (sin letras aleatorias)
     const emptyBoard = Array(rows).fill().map(() => Array(cols).fill(''));
@@ -388,23 +405,23 @@ const WordSearchGenerator = () => {
         
         if (direction === 'horizontal') {
           if (row === position.row && col >= position.col && col < position.col + length) {
-            return { isHighlighted: true, color: wordColors.horizontal, isSelected: true };
+            return { isHighlighted: true, style: wordStyles.horizontal.cellClass, isSelected: true };
           }
         } else if (direction === 'vertical') {
           if (col === position.col && row >= position.row && row < position.row + length) {
-            return { isHighlighted: true, color: wordColors.vertical, isSelected: true };
+            return { isHighlighted: true, style: wordStyles.vertical.cellClass, isSelected: true };
           }
         } else if (direction === 'diagonal') {
           if (row - position.row === col - position.col && row >= position.row && row < position.row + length) {
-            return { isHighlighted: true, color: wordColors.diagonal, isSelected: true };
+            return { isHighlighted: true, style: wordStyles.diagonal.cellClass, isSelected: true };
           }
         } else if (direction === 'bottomUp') {
           if (col === position.col && row <= position.row && row > position.row - length) {
-            return { isHighlighted: true, color: wordColors.bottomUp, isSelected: true };
+            return { isHighlighted: true, style: wordStyles.bottomUp.cellClass, isSelected: true };
           }
         } else if (direction === 'topDown') {
           if (row - position.row === position.col - col && row >= position.row && row < position.row + length) {
-            return { isHighlighted: true, color: wordColors.topDown, isSelected: true };
+            return { isHighlighted: true, style: wordStyles.topDown.cellClass, isSelected: true };
           }
         }
       }
@@ -420,23 +437,23 @@ const WordSearchGenerator = () => {
         
         if (direction === 'horizontal') {
           if (row === position.row && col >= position.col && col < position.col + length) {
-            return { isHighlighted: true, color: wordColors.horizontal };
+            return { isHighlighted: true, style: wordStyles.horizontal.cellClass };
           }
         } else if (direction === 'vertical') {
           if (col === position.col && row >= position.row && row < position.row + length) {
-            return { isHighlighted: true, color: wordColors.vertical };
+            return { isHighlighted: true, style: wordStyles.vertical.cellClass };
           }
         } else if (direction === 'diagonal') {
           if (row - position.row === col - position.col && row >= position.row && row < position.row + length) {
-            return { isHighlighted: true, color: wordColors.diagonal };
+            return { isHighlighted: true, style: wordStyles.diagonal.cellClass };
           }
         } else if (direction === 'bottomUp') {
           if (col === position.col && row <= position.row && row > position.row - length) {
-            return { isHighlighted: true, color: wordColors.bottomUp };
+            return { isHighlighted: true, style: wordStyles.bottomUp.cellClass };
           }
         } else if (direction === 'topDown') {
           if (row - position.row === position.col - col && row >= position.row && row < position.row + length) {
-            return { isHighlighted: true, color: wordColors.topDown };
+            return { isHighlighted: true, style: wordStyles.topDown.cellClass };
           }
         }
       }
@@ -446,23 +463,23 @@ const WordSearchGenerator = () => {
   }, [showSolution, placedWords, selectedWord]);
 
   // Función para renderizar listas de palabras
-  const renderWordList = useCallback((category, words, color) => {
+  const renderWordList = useCallback((category, words, styleClass) => {
     return (
-      <div className="mb-4">
-        <h3 className={`font-bold ${color}`}>{category}:</h3>
-        <ul className="list-disc pl-5">
+      <div className="word-category">
+        <h3 className={`category-title ${styleClass}`}>{category}:</h3>
+        <ul className="word-list">
           {words.map((word, index) => (
-            <li key={index} className="flex justify-between items-center">
+            <li key={index} className="word-item">
               <button 
                 onClick={() => setSelectedWord(selectedWord === word ? null : word)}
-                className={`text-left hover:underline ${selectedWord === word ? 'font-bold bg-green-100 px-1 rounded' : ''}`}
+                className={`word-button ${selectedWord === word ? 'selected' : ''}`}
                 type="button"
               >
                 {word}
               </button>
               <button 
                 onClick={() => removeWord(category.toLowerCase().replace(' ', ''), index)}
-                className="text-red-500 ml-2"
+                className="remove-btn"
                 type="button"
               >
                 x
@@ -475,18 +492,18 @@ const WordSearchGenerator = () => {
   }, [removeWord, selectedWord]);
 
   return (
-    <div className="p-4 flex flex-col lg:flex-row gap-4">
-      <div className="lg:w-1/2 p-4 bg-gray-100 rounded-lg">
-        <h2 className="text-xl font-bold mb-4">Sopa de Letras: Resiliencia y Poder</h2>
+    <div className="word-search-container">
+      <div className="word-search-panel board-panel">
+        <h2 className="form-heading">Sopa de Letras: Resiliencia y Poder</h2>
         
-        <div className="mb-4">
-          <label className="block mb-2">Tamaño del Tablero:</label>
-          <div className="flex gap-2">
+        <div className="form-group">
+          <label className="form-label">Tamaño del Tablero:</label>
+          <div className="size-inputs">
             <input
               type="number"
               value={rows}
               onChange={(e) => setRows(Math.min(20, Math.max(5, parseInt(e.target.value) || 5)))}
-              className="w-20 p-1 border rounded"
+              className="form-input"
               min="5"
               max="20"
             />
@@ -495,18 +512,18 @@ const WordSearchGenerator = () => {
               type="number"
               value={cols}
               onChange={(e) => setCols(Math.min(20, Math.max(5, parseInt(e.target.value) || 5)))}
-              className="w-20 p-1 border rounded"
+              className="form-input"
               min="5"
               max="20"
             />
           </div>
         </div>
         
-        <div className="grid grid-cols-1 gap-2 mb-4">
+        <div className="form-group">
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="p-2 border rounded"
+            className="form-select"
           >
             <option value="horizontal">Horizontal</option>
             <option value="vertical">Vertical</option>
@@ -515,30 +532,30 @@ const WordSearchGenerator = () => {
             <option value="topDown">De Arriba hacia Abajo</option>
           </select>
           
-          <div className="flex">
+          <div className="form-input-group">
             <input
               type="text"
               value={currentWord}
               onChange={(e) => setCurrentWord(e.target.value)}
               placeholder="Ingresa una palabra"
-              className="flex-1 p-2 border rounded-l"
+              className="form-text-input"
             />
             <button
               onClick={addWord}
-              className="bg-blue-500 text-white px-4 py-2 rounded-r"
+              className="add-btn"
               type="button"
             >
               Añadir
             </button>
           </div>
           
-          {error && <p className="text-red-500">{error}</p>}
+          {error && <p className="error-text">{error}</p>}
         </div>
         
-        <div className="flex justify-between gap-2 mb-4">
+        <div className="button-group">
           <button
             onClick={generatePuzzle}
-            className="bg-green-500 text-white px-4 py-2 rounded w-full"
+            className="generate-btn"
             type="button"
           >
             Generar Sopa de Letras
@@ -549,7 +566,7 @@ const WordSearchGenerator = () => {
               setShowSolution(!showSolution);
               setSelectedWord(null);
             }}
-            className={`${showSolution ? 'bg-red-500' : 'bg-purple-500'} text-white px-4 py-2 rounded w-full`}
+            className={`solution-btn ${showSolution ? 'active' : ''}`}
             type="button"
           >
             {showSolution ? 'Ocultar Solución' : 'Mostrar Solución'}
@@ -557,13 +574,13 @@ const WordSearchGenerator = () => {
         </div>
         
         {placedWords && (
-          <div className="mb-4 text-sm text-gray-700">
+          <div className="word-count">
             <p>Palabras colocadas: {placedWords.length} de {horizontalWords.length + verticalWords.length + diagonalWords.length + bottomUpWords.length + topDownWords.length}</p>
           </div>
         )}
         
-        <div className="overflow-auto">
-          <table className="border-collapse">
+        <div className="word-search-board">
+          <table className="word-search-table">
             <tbody>
               {board.map((row, rowIndex) => (
                 <tr key={rowIndex}>
@@ -572,9 +589,9 @@ const WordSearchGenerator = () => {
                     return (
                       <td 
                         key={colIndex}
-                        className={`w-8 h-8 text-center border ${
+                        className={`board-cell ${
                           highlight.isHighlighted 
-                          ? `${highlight.color} font-bold ${highlight.isSelected ? 'bg-green-200 animate-pulse' : showSolution ? 'bg-yellow-100' : ''}` 
+                          ? `${highlight.style} ${highlight.isSelected ? 'selected-cell' : showSolution ? 'solution-cell' : ''}` 
                           : ''
                         }`}
                       >
@@ -589,26 +606,26 @@ const WordSearchGenerator = () => {
         </div>
       </div>
       
-      <div className="lg:w-1/2 p-4 bg-gray-50 rounded-lg">
-        <h2 className="text-xl font-bold mb-4">Palabras a encontrar</h2>
-        <p className="mb-4 text-sm italic text-gray-600">Haz clic en una palabra para resaltarla en la sopa de letras</p>
+      <div className="word-search-panel words-panel">
+        <h2 className="form-heading">Palabras a encontrar</h2>
+        <p className="form-instruction">Haz clic en una palabra para resaltarla en la sopa de letras</p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="word-categories">
           <div>
-            {renderWordList('Horizontal', horizontalWords, wordColors.horizontal)}
-            {renderWordList('Vertical', verticalWords, wordColors.vertical)}
-            {renderWordList('Diagonal', diagonalWords, wordColors.diagonal)}
+            {renderWordList('Horizontal', horizontalWords, wordStyles.horizontal.titleClass)}
+            {renderWordList('Vertical', verticalWords, wordStyles.vertical.titleClass)}
+            {renderWordList('Diagonal', diagonalWords, wordStyles.diagonal.titleClass)}
           </div>
           <div>
-            {renderWordList('De Abajo hacia Arriba', bottomUpWords, wordColors.bottomUp)}
-            {renderWordList('De Arriba hacia Abajo', topDownWords, wordColors.topDown)}
+            {renderWordList('De Abajo hacia Arriba', bottomUpWords, wordStyles.bottomUp.titleClass)}
+            {renderWordList('De Arriba hacia Abajo', topDownWords, wordStyles.topDown.titleClass)}
           </div>
         </div>
         
         {selectedWord && placedWords && placedWords.length > 0 && (
-          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-            <p className="font-medium">
-              <span className="font-bold">{selectedWord}</span> - 
+          <div className="word-info">
+            <p className="word-info-text">
+              <span className="word-highlight">{selectedWord}</span> - 
               {(() => {
                 const foundWord = placedWords.find(placed => placed.word === selectedWord);
                 if (foundWord) {
@@ -630,11 +647,11 @@ const WordSearchGenerator = () => {
         )}
         
         {showSolution && placedWords && placedWords.length > 0 && (
-          <div className="mt-8 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-            <h3 className="font-bold text-lg text-center mb-2">¡Solución!</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="solution-container">
+            <h3 className="solution-title">¡Solución!</h3>
+            <div className="solution-grid">
               {placedWords.map((placed, index) => (
-                <p key={index} className={`${wordColors[placed.direction]} p-1 rounded`}>
+                <p key={index} className={`solution-word ${wordStyles[placed.direction].wordClass}`}>
                   <strong>{placed.word}</strong>: {placed.direction === 'horizontal' 
                     ? `Horizontal (fila ${placed.position.row + 1}, columna ${placed.position.col + 1})` 
                     : placed.direction === 'vertical'
